@@ -19,16 +19,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  check:
+    # A new Mac runs this with its /bin/bash 3.2
     runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check syntax with macOS /bin/bash
+        run: /bin/bash -n install.sh
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Check syntax
-        run: /bin/bash -n install.sh
 
       - name: Build site
         run: |
