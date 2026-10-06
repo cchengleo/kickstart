@@ -1,0 +1,42 @@
+name: Publish to GitHub Pages
+
+# Serves install.sh at https://kickstart.ccheng.us/ (and /install.sh), so
+#   /bin/bash -c "$(curl -fsSL https://kickstart.ccheng.us)"
+# runs the version on main.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check syntax
+        run: /bin/bash -n install.sh
+
+      - name: Build site
+        run: |
+          mkdir _site
+          cp install.sh _site/index.html
+          cp install.sh _site/install.sh
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+      - id: deployment
+        uses: actions/deploy-pages@v4
