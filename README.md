@@ -6,17 +6,42 @@ One command to set up a Mac from my dotfiles:
 /bin/bash -c "$(curl -fsSL https://kickstart.ccheng.us)"
 ```
 
-It installs Homebrew if needed, logs in to GitHub once (browser or one-time
-code), clones the private `cchengleo/dotfiles` and `cchengleo/dotfiles-local`
-repos, and deploys both. dotfiles-local uses the `Darwin/<hostname -s>` branch
-if it exists, otherwise `default`. Running it again updates and redeploys.
+On a new Mac: finish Setup Assistant with an admin account, open Terminal,
+paste the command. It asks a few questions first, each with a default
+(Enter keeps it), and shows a summary before changing anything:
+
+```
+  Computer name  [Chengs-MacBook-Pro]: ccheng-mbp-m6-home
+  Git name       [Cheng Cheng]:
+  Git email      [ccheng@ccheng.us]:
+
+==> GitHub access ... logged in as cchengleo
+
+  dotfiles-local branch for ccheng-mbp-m6-home:
+    1) default            (minimal, shared)
+    2) new: Darwin/ccheng-mbp-m6-home  (from default, pushed)
+    3) existing branch...
+  Choice [1]: 2
+```
+
+Then it installs Homebrew if needed (enter your Mac password once), logs in
+to GitHub (approve the one-time code in the browser that opens, or on any
+other device), sets the computer name and hostname, clones the private
+`cchengleo/dotfiles` and `cchengleo/dotfiles-local` repos, and deploys both.
+If `Darwin/<name>` already exists it is used without asking. Running it
+again updates and redeploys.
 
 On an Apple-managed Mac, install Apple's internal Homebrew first; kickstart
 stops and says so rather than installing the public one.
 
+Each variable replaces its question. With no terminal, or with
+`KICKSTART_YES=1`, nothing is asked and the defaults are used.
+
 | Variable | Effect |
 |----------|--------|
-| `KICKSTART_BRANCH` | dotfiles-local branch to use instead of the automatic choice |
+| `KICKSTART_NAME` | computer name and hostname (default: current hostname) |
+| `KICKSTART_BRANCH` | dotfiles-local branch, or `new` to create `Darwin/<name>` from `default` |
+| `KICKSTART_GIT_NAME`, `KICKSTART_GIT_EMAIL` | git author for both repos |
 | `DOTFILES_CONFLICT` | what bootstrap does with existing files: `backup` (default), `skip`, `overwrite` |
 | `KICKSTART_DOTFILES_URL`, `KICKSTART_DOTFILES_LOCAL_URL` | clone these instead of GitHub and skip the login (for tests) |
 
@@ -32,7 +57,9 @@ GitHub account and on the `ccheng.us` registrar/DNS account.
 
 `~/.dotfiles/test/tart/run.sh --kickstart install.sh --host <name>` runs this
 script in a fresh macOS VM against local snapshots of both repos and checks
-the result (see `test/tart/README.md` in dotfiles).
+the result; add `--answers 'name\n\n\n2\nY\n'` to drive the questions.
+`--e2e` runs the published one-liner against GitHub instead (see
+`test/tart/README.md` in dotfiles).
 
 ## Hosting setup (one time)
 
