@@ -30,7 +30,7 @@ You need a key from me: a 1Password link. Then:
 2. Open the link, copy the **private key**, and paste it at the
    `Deploy key [paste, then Enter]` prompt (it isn't shown).
 
-kickstart saves it as `~/.ssh/cchengleo-dotfiles`, checks that it works, and
+kickstart saves it as `~/.ssh/damaris-x-dotfiles`, checks that it works, and
 clones a read-only copy of my dotfiles that I keep for friends. Their setup
 offers you a `~/.dotfiles-local` of your own, for your changes; its README
 explains it. The same command, run again, updates your Mac to my latest
@@ -41,7 +41,8 @@ dotfiles.
 | Variable | Effect |
 |----------|--------|
 | `KICKSTART_DEPLOY_KEY` | use this private key file instead of asking |
-| `KICKSTART_GITHUB_USER` | owner of the dotfiles repos (default `cchengleo`) |
+| `KICKSTART_GITHUB_USER` | owner of the `dotfiles` repo (default `cchengleo`) |
+| `KICKSTART_FRIENDS_REPO` | the copy friends read (default `damaris-x/dotfiles`) |
 | `KICKSTART_DOTFILES_URL` | clone this instead of GitHub (for tests) |
 
 The rest of the setup has its own options; see `script/kickstart` in the

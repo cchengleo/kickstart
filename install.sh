@@ -8,8 +8,8 @@
 #    - GitHub login, on the repo owner's Macs: installs the GitHub CLI and logs
 #      in with a one-time code you approve in a browser
 #    - a deploy key you were given, on a friend's Mac: paste the private key;
-#      it is saved as ~/.ssh/<owner>-dotfiles and used for updates too, and
-#      reads the friends' copy of the repo (<owner>/dotfiles-friends)
+#      it is saved as ~/.ssh/damaris-x-dotfiles, used for updates too, and
+#      reads the copy of the dotfiles kept for friends (damaris-x/dotfiles)
 # 2. Installs Homebrew if it's missing (it brings git). On a Mac managed by an
 #    organization (MDM), install the organization's Homebrew first.
 # 3. Clones the repo to ~/.dotfiles and runs ~/.dotfiles/script/kickstart,
@@ -19,7 +19,8 @@
 #
 # Environment:
 #   KICKSTART_DEPLOY_KEY    private key file to use, instead of asking
-#   KICKSTART_GITHUB_USER   owner of the dotfiles repos (default: cchengleo)
+#   KICKSTART_GITHUB_USER   owner of the dotfiles repo (default: cchengleo)
+#   KICKSTART_FRIENDS_REPO  the friends' copy (default: damaris-x/dotfiles)
 #   KICKSTART_DOTFILES_URL  clone this instead of GitHub, without an access
 #                           check (used by the dotfiles Tart tests)
 #   The rest pass through to script/kickstart (see the top of that file).
@@ -29,10 +30,12 @@
 # partial download runs nothing.
 
 GITHUB_USER="${KICKSTART_GITHUB_USER:-cchengleo}"
+FRIENDS_REPO="${KICKSTART_FRIENDS_REPO:-damaris-x/dotfiles}"
 DOTFILES_DIR="$HOME/.dotfiles"
-KEY_FILE="$HOME/.ssh/$GITHUB_USER-dotfiles"
+KEY_NAME="${FRIENDS_REPO//\//-}"
+KEY_FILE="$HOME/.ssh/$KEY_NAME"
 # As stored in the clone's core.sshCommand; git runs it through the shell
-SSH_COMMAND="ssh -i ~/.ssh/$GITHUB_USER-dotfiles -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+SSH_COMMAND="ssh -i ~/.ssh/$KEY_NAME -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
 
 info()  { printf '\033[34m==>\033[0m \033[1m%s\033[0m\n' "$1"; }
 ok()    { printf '  \033[32m✓\033[0m %s\n' "$1"; }
@@ -135,7 +138,7 @@ install_key() {
     || die "ssh can't read that key. Ask $GITHUB_USER for it again (RSA, or OpenSSH format)."
   mv "$key_tmp" "$KEY_FILE"
   key_tmp=
-  ok "key saved as ~/.ssh/$GITHUB_USER-dotfiles"
+  ok "key saved as ~/.ssh/$KEY_NAME"
 }
 
 main() {
@@ -179,11 +182,11 @@ main() {
   elif [[ -n "$key_src" ]]; then
     info "Deploy key"
     [[ "$key_src" == saved ]] || install_key "$key_src"
-    local url="${KICKSTART_DOTFILES_URL:-git@github.com:$GITHUB_USER/dotfiles-friends.git}"
+    local url="${KICKSTART_DOTFILES_URL:-git@github.com:$FRIENDS_REPO.git}"
     if [[ -z "${KICKSTART_DOTFILES_URL:-}" ]]; then
       GIT_SSH_COMMAND="$SSH_COMMAND" git ls-remote "$url" HEAD >/dev/null 2>&1 \
-        || die "The key can't read $GITHUB_USER's dotfiles yet. Once $GITHUB_USER has added it as a deploy key, run this again."
-      ok "the key can read $GITHUB_USER's dotfiles"
+        || die "The key can't read $FRIENDS_REPO yet. Once $GITHUB_USER has added it there as a deploy key, run this again."
+      ok "the key can read $FRIENDS_REPO"
     fi
     info "dotfiles"
     git clone --quiet -c core.sshCommand="$SSH_COMMAND" "$url" "$DOTFILES_DIR"
