@@ -31,16 +31,17 @@ You need a key from me: a 1Password link. Then:
    `Deploy key [paste, then Enter]` prompt (it isn't shown).
 
 kickstart saves it as `~/.ssh/cchengleo-dotfiles`, checks that it works, and
-clones the dotfiles read-only. Their setup offers you a `~/.dotfiles-local` of
-your own, for your changes; its README explains it. The same command, run
-again, updates your Mac with my latest dotfiles.
+clones a read-only copy of my dotfiles that I keep for friends. Their setup
+offers you a `~/.dotfiles-local` of your own, for your changes; its README
+explains it. The same command, run again, updates your Mac to my latest
+dotfiles.
 
 ## Options
 
 | Variable | Effect |
 |----------|--------|
 | `KICKSTART_DEPLOY_KEY` | use this private key file instead of asking |
-| `KICKSTART_GITHUB_USER` | owner of the `dotfiles` repo (default `cchengleo`) |
+| `KICKSTART_GITHUB_USER` | owner of the dotfiles repos (default `cchengleo`) |
 | `KICKSTART_DOTFILES_URL` | clone this instead of GitHub (for tests) |
 
 The rest of the setup has its own options; see `script/kickstart` in the
